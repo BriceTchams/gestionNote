@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des UE et Groupes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-[#f8f9fa] font-sans">
+    <div class="flex">
+        @include('departement.sidebar')
+
+        <main class="ml-64 flex-1 p-8">
+            <header class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">Unités d'Enseignement (UE)</h2>
+            </header>
+
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <!-- Formulaire UE -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                    <h3 class="text-lg font-semibold mb-4 text-indigo-700 border-b pb-2">Ajouter une UE</h3>
+                    <form action="{{ route('departement.ues.store') }}" method="POST" class="space-y-4">
+                        @csrf
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Code UE</label>
+                                <input type="text" name="code" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Crédits</label>
+                                <input type="number" name="credits" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Libellé</label>
+                            <input type="text" name="libelle" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Filière</label>
+                            <select name="id_filiere" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                @foreach($filieres as $filiere)
+                                    <option value="{{ $filiere->id_Filiere }}">{{ $filiere->nom_Filiere }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Enseignant responsable</label>
+                            <select name="id_Enseignant" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                @foreach($enseignants as $enseignant)
+                                    <option value="{{ $enseignant->id_Enseignant }}">{{ $enseignant->nom_Enseignant }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Groupe d'UE (Optionnel)</label>
+                            <select name="idGroupe" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                <option value="">Aucun</option>
+                                @foreach($groupes as $groupe)
+                                    <option value="{{ $groupe->id }}">{{ $groupe->intitule }} ({{ $groupe->code }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">Enregistrer l'UE</button>
+                    </form>
+                </div>
+
+                <!-- Formulaire Groupe -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                    <h3 class="text-lg font-semibold mb-4 text-purple-700 border-b pb-2">Ajouter un Groupe d'UE</h3>
+                    <form action="{{ route('departement.groupes.store') }}" method="POST" class="space-y-4">
+                        @csrf
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Code du Groupe</label>
+                            <input type="text" name="code" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="ex: INF_BASE">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Intitulé du Groupe</label>
+                            <input type="text" name="intitule" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="ex: Informatique Fondamentale">
+                        </div>
+                        <div class="p-4 bg-purple-50 rounded-lg text-sm text-purple-600">
+                            Les groupes permettent de regrouper plusieurs UE (ex: UE fondamentales, UE transversales) pour les calculs de crédits.
+                        </div>
+                        <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition mt-4">Créer le groupe</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Liste des UE -->
+            <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                <div class="p-6 border-b">
+                    <h3 class="font-bold text-gray-800 text-lg">Liste des Unités d'Enseignement</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-6 py-4 text-sm font-semibold text-gray-600 border-b">Code</th>
+                                <th class="px-6 py-4 text-sm font-semibold text-gray-600 border-b">Libellé</th>
+                                <th class="px-6 py-4 text-sm font-semibold text-gray-600 border-b">Crédits</th>
+                                <th class="px-6 py-4 text-sm font-semibold text-gray-600 border-b">Enseignant</th>
+                                <th class="px-6 py-4 text-sm font-semibold text-gray-600 border-b">Groupe</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse($ues as $ue)
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 text-sm font-medium text-indigo-600">{{ $ue->code }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">{{ $ue->libelle }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">{{ $ue->credits }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">{{ $ue->enseignant->nom_Enseignant ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4">
+                                        @if($ue->groupe_ue)
+                                            <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">{{ $ue->groupe_ue->intitule }}</span>
+                                        @else
+                                            <span class="text-gray-400 text-xs italic">Aucun</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-500 italic">Aucune UE enregistrée.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

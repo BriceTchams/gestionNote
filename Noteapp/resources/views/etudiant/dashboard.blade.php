@@ -1,292 +1,110 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tableau de bord Étudiant</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
-    <style>
-        :root {
-            --primary-color: #0d6efd;
-            --secondary-color: #6c63ff;
-            --dark-color: #111827;
-            --light-color: #f8f9fa;
-            --accent-color: #20c997;
-        }
-        body { 
-            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; 
-            background-color: #f8f9fa; 
-            color: #333;
-            line-height: 1.6;
-        }
-        .navbar {
-            background-color: #ffffff;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            padding: 15px 0;
-        }
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--primary-color) !important;
-            font-size: 1.5rem;
-        }
-        .sidebar {
-            background: #0f172a;
-            color: #ffffff;
-            min-height: 100vh;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-            padding-top: 76px;
-        }
-        .sidebar .nav-link {
-            color: #cbd5e1;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin: 5px 10px;
-            transition: all 0.3s;
-        }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active {
-            background: #1e293b;
-            color: #ffffff;
-        }
-        .main-content {
-            padding: 30px;
-        }
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .stat-card {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-        }
-        .table th {
-            border-top: none;
-            background-color: #f8f9fa;
-            font-weight: 600;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniNotes - Tableau de bord Étudiant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="#">UniNotes</a>
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle me-2"></i>Étudiant Dupont
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profil</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Paramètres</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ route('home') }}"><i class="fas fa-sign-out-alt me-2"></i>Déconnexion</a></li>
-                    </ul>
+<body class="bg-gray-50 flex">
+
+    <aside class="w-64 bg-[#1a1c2e] min-h-screen text-white flex flex-col fixed">
+        <div class="p-6 flex items-center gap-3">
+            <div class="bg-indigo-600 p-2 rounded-lg"><i data-lucide="graduation-cap"></i></div>
+            <span class="text-xl font-bold">UniNotes</span>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-2">
+            <a href="{{ route('etudiant.dashboard') }}" class="flex items-center gap-3 {{ request()->routeIs('etudiant.dashboard') ? 'bg-blue-600' : 'hover:bg-slate-800 text-gray-400' }} p-3 rounded-lg transition"><i data-lucide="home"></i> Tableau de bord</a>
+            <a href="{{ route('etudiant.notes') }}" class="flex items-center gap-3 {{ request()->routeIs('etudiant.notes') ? 'bg-blue-600' : 'hover:bg-slate-800 text-gray-400' }} p-3 rounded-lg transition"><i data-lucide="file-text"></i> Mes Notes</a>
+            <a href="{{ route('etudiant.revendications') }}" class="flex items-center gap-3 {{ request()->routeIs('etudiant.revendications') ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 text-gray-400' }} p-3 rounded-lg transition"><i data-lucide="message-square"></i> Revendications</a>
+        </nav>
+
+        <div class="p-4 m-4">
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="flex items-center gap-3 w-full text-red-400 hover:text-red-300 hover:bg-red-500/10 p-3 rounded-lg transition">
+                    <i data-lucide="log-out"></i> Déconnexion
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="flex-1 ml-64 p-8">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800 tracking-tight">Tableau de bord</h1>
+            <div class="flex items-center gap-4">
+                <i data-lucide="bell" class="text-gray-500 relative cursor-pointer"><span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span></i>
+                <div class="flex items-center gap-2 bg-white p-2 px-4 rounded-xl shadow-sm border border-gray-100">
+                    <div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-[10px] font-bold text-white">
+                        {{ strtoupper(substr($etudiant->nom_Complet, 0, 1)) }}{{ ($spacePos = strpos($etudiant->nom_Complet, ' ')) ? strtoupper(substr($etudiant->nom_Complet, $spacePos + 1, 1)) : '' }}
+                    </div>
+                    <span class="text-sm font-semibold text-gray-700">{{ $etudiant->nom_Complet }}</span>
+                    <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-500 rounded-3xl p-10 text-white flex justify-between items-center mb-8 shadow-xl shadow-indigo-100">
+            <div>
+                <h2 class="text-3xl font-extrabold mb-2">Bonjour, {{ explode(' ', $etudiant->nom_Complet)[0] }} ! 👋</h2>
+                <p class="opacity-90 font-medium">Classe : {{ $etudiant->classe->lib_Classe ?? 'Non définie' }} | Matricule : {{ $etudiant->matricule_Et }}</p>
+            </div>
+            <a href="{{ route('etudiant.notes') }}" class="bg-white/20 hover:bg-white/30 px-6 py-3 rounded-2xl flex items-center gap-2 transition backdrop-blur-md font-semibold">
+                Voir mes notes <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex justify-between items-start max-w-xs">
+                <div><p class="text-gray-400 text-[10px] font-bold uppercase mb-1">Revendications</p><p class="text-2xl font-black">{{ $nbRevendications }}</p></div>
+                <div class="bg-orange-100 p-2 rounded-xl text-orange-500"><i data-lucide="message-circle" class="w-5 h-5"></i></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-8">
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="font-black text-xl text-gray-800">Notes Récentes</h3>
+                    <a href="{{ route('etudiant.notes') }}" class="text-xs font-bold text-gray-400 hover:text-indigo-600 transition uppercase tracking-widest">Voir tout</a>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest">
+                            <tr>
+                                <th class="px-6 py-4">Matière</th>
+                                <th class="px-6 py-4 text-center">Évaluation</th>
+                                <th class="px-6 py-4 text-center">Note</th>
+                                <th class="px-6 py-4 text-center">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50">
+                            @forelse($notesRecentes as $note)
+                            <tr class="hover:bg-gray-50/50 transition">
+                                <td class="px-6 py-4 font-bold text-gray-800">{{ $note->evaluation->ue->libelle ?? 'N/A' }}</td>
+                                <td class="px-6 py-4 text-center text-gray-600">{{ $note->evaluation->type_Evaluation ?? 'N/A' }}</td>
+                                <td class="px-6 py-4 text-center font-black text-indigo-600">{{ number_format($note->valeur, 2) }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    @if($note->valeur >= 10)
+                                        <span class="bg-green-100 text-green-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Validé</span>
+                                    @else
+                                        <span class="bg-red-100 text-red-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Non Validé</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="px-6 py-8 text-center text-gray-500 italic">Aucune note récente disponible.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-    </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar d-none d-md-block">
-                <div class="pt-4">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="{{ route('etudiant.dashboard') }}">
-                                <i class="fas fa-tachometer-alt me-2"></i>Tableau de bord
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('etudiant.notes') }}">
-                                <i class="fas fa-book me-2"></i>Mes Notes
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('etudiant.revendications') }}">
-                                <i class="fas fa-exclamation-circle me-2"></i>Mes Revendications
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 main-content">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1 class="h3 mb-0">Tableau de bord Étudiant</h1>
-                    <div class="d-flex">
-                        <a class="btn btn-primary" href="{{ route('etudiant.notes') }}">
-                            <i class="fas fa-eye me-2"></i>Voir mes notes
-                        </a>
-                    </div>
-                </div>
-                <div class="p-4 mb-4" style="border-radius: 15px; background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white;">
-                    <h5 class="mb-1">Bienvenue, Étudiant Dupont</h5>
-                    <p class="mb-0">Heureux de vous revoir. Consultez vos dernières notes et notifications ci-dessous.</p>
-                </div>
-
-                <!-- Stats Cards -->
-                <div class="row mb-4">
-                    <div class="col-md-3 mb-3">
-                        <div class="stat-card">
-                            <h5 class="mb-2">Moyenne Générale</h5>
-                            <h2 class="mb-0">14.5/20</h2>
-                            <small><i class="fas fa-arrow-up me-1"></i>+0.5 vs semestre dernier</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Cours en cours</h5>
-                                <h2 class="card-text">6</h2>
-                                <p class="card-text text-muted">Semestre 3</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Prochain examen</h5>
-                                <h2 class="card-text">15 Déc</h2>
-                                <p class="card-text text-muted">Algorithmique</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Documents</h5>
-                                <h2 class="card-text">24</h2>
-                                <p class="card-text text-muted">Non lus: 3</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Grades -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Notes récentes</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Matière</th>
-                                        <th>Note</th>
-                                        <th>Date</th>
-                                        <th>Commentaire</th>
-                                        <th>Statut</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Algorithmique</td>
-                                        <td><span class="badge bg-success">16/20</span></td>
-                                        <td>10/12/2024</td>
-                                        <td>Excellent travail</td>
-                                        <td><span class="badge bg-success">Validé</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Base de données</td>
-                                        <td><span class="badge bg-warning">12/20</span></td>
-                                        <td>05/12/2024</td>
-                                        <td>À améliorer</td>
-                                        <td><span class="badge bg-warning">En attente</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Mathématiques</td>
-                                        <td><span class="badge bg-success">15/20</span></td>
-                                        <td>01/12/2024</td>
-                                        <td>Très bien</td>
-                                        <td><span class="badge bg-success">Validé</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Upcoming Events & Notifications -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Événements à venir</h5>
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-0">Examen Algorithmique</h6>
-                                            <small class="text-muted">15 Décembre 2024 - 09:00</small>
-                                        </div>
-                                        <span class="badge bg-primary">Salle A12</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-0">Rendu projet BD</h6>
-                                            <small class="text-muted">20 Décembre 2024 - 23:59</small>
-                                        </div>
-                                        <span class="badge bg-warning">En ligne</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Notifications</h5>
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-0">Nouvelle note publiée</h6>
-                                            <small class="text-muted">Algorithmique - 16/20</small>
-                                        </div>
-                                        <span class="badge bg-success">Nouveau</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-0">Rappel: Projet BD</h6>
-                                            <small class="text-muted">Dû le 20 Décembre</small>
-                                        </div>
-                                        <span class="badge bg-warning">Rappel</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-0">Emploi du temps mis à jour</h6>
-                                            <small class="text-muted">Consultez la nouvelle version</small>
-                                        </div>
-                                        <span class="badge bg-info">Info</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </main>
+    <script>lucide.createIcons();</script>
 </body>
 </html>

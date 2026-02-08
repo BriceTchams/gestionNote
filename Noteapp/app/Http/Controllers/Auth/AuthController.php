@@ -30,34 +30,34 @@ class AuthController extends Controller
             'login' => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
-    
+
         $userTypes = ['etudiant', 'enseignant', 'departement'];
         $authenticatedGuard = null;
-    
+
         foreach ($userTypes as $type) {
             // Correction : on enlève le ";" et on assigne le type si le attempt réussit
             if (Auth::guard($type)->attempt([
-                'login' => $credentials['login'], 
+                'login' => $credentials['login'],
                 'password' => $credentials['password']
             ], $request->boolean('remember'))) {
-                
+
                 $authenticatedGuard = $type;
                 break; // On arrête la boucle dès qu'on a trouvé le bon guard
             }
         }
-    
+
         if ($authenticatedGuard) {
             $request->session()->regenerate();
-            
+
             // Redirection basée sur le guard qui a réussi
             return match ($authenticatedGuard) {
-                'etudiant'    => redirect()->intended(route('etudiant.dashboard')),
-                'enseignant'  => redirect()->intended(route('enseignant.dashboard')),
+                'etudiant'    => redirect()->intended(route('etudiant.notes')),
+                'enseignant'  => redirect()->intended(route('enseignant.saisie')),
                 'departement' => redirect()->intended(route('departement.dashboard')),
                 default       => redirect()->intended('/'),
             };
         }
-    
+
         // Si on arrive ici, aucun guard n'a fonctionné
         return back()->withErrors([
             'login' => 'Les identifiants fournis ne correspondent pas à nos enregistrements.',

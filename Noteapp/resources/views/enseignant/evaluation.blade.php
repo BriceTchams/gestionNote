@@ -14,22 +14,29 @@
             <div class="bg-indigo-600 p-2 rounded-lg"><i data-lucide="graduation-cap"></i></div>
             <span class="text-xl font-bold">UniNotes</span>
         </div>
-        
+
         <nav class="flex-1 px-4 space-y-2">
-            <a href="{{ route('enseignant.dashboard') }}" class="flex items-center gap-3 hover:bg-slate-800 p-3 rounded-lg text-gray-400 transition"><i data-lucide="home"></i> Tableau de bord</a>
-            <a href="{{ route('enseignant.saisie') }}" class="flex items-center gap-3 hover:bg-slate-800 p-3 rounded-lg text-gray-400 transition"><i data-lucide="file-edit"></i> Saisie des Notes</a>
-            <a href="#" class="flex items-center gap-3 bg-blue-600 p-3 rounded-lg shadow-lg shadow-blue-500/20"><i data-lucide="clipboard-list"></i> Évaluations</a>
-            <a href="{{ route('enseignant.revendications') }}" class="flex items-center gap-3 hover:bg-slate-800 p-3 rounded-lg text-gray-400 transition"><i data-lucide="message-square"></i> Revendications</a>
+            <a href="{{ route('enseignant.dashboard') }}" class="flex items-center gap-3 {{ request()->routeIs('enseignant.dashboard') ? 'bg-blue-600' : 'hover:bg-slate-800 text-gray-400' }} p-3 rounded-lg transition"><i data-lucide="home"></i> Tableau de bord</a>
+            <a href="{{ route('enseignant.saisie') }}" class="flex items-center gap-3 {{ request()->routeIs('enseignant.saisie') ? 'bg-blue-600' : 'hover:bg-slate-800 text-gray-400' }} p-3 rounded-lg transition"><i data-lucide="file-edit"></i> Saisie des Notes</a>
+            <a href="{{ route('enseignant.evaluation') }}" class="flex items-center gap-3 {{ request()->routeIs('enseignant.evaluation') ? 'bg-blue-600' : 'hover:bg-slate-800 text-gray-400' }} p-3 rounded-lg transition"><i data-lucide="clipboard-list"></i> Évaluations</a>
+
+            <div class="relative">
+                <a href="{{ route('enseignant.revendications') }}" class="flex items-center gap-3 {{ request()->routeIs('enseignant.revendications') ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 text-gray-400' }} p-3 rounded-lg transition"><i data-lucide="message-square"></i> Revendications</a>
+            </div>
         </nav>
 
-        <div class="p-4 bg-[#2d2f45] m-4 rounded-xl">
-            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Session Active</p>
-            <p class="font-bold text-sm text-indigo-300">2025 - 2026</p>
+        <div class="p-4 m-4">
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="flex items-center gap-3 w-full text-red-400 hover:text-red-300 hover:bg-red-500/10 p-3 rounded-lg transition">
+                    <i data-lucide="log-out"></i> Déconnexion
+                </button>
+            </form>
         </div>
     </aside>
 
     <main class="flex-1 ml-64 p-8">
-        
+
         @if(session('success'))
         <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 flex justify-between items-center rounded-r-xl shadow-sm animate-bounce">
             <div class="flex items-center gap-3">
@@ -48,21 +55,30 @@
             <div class="flex items-center gap-4">
                 <div class="text-right mr-4 border-r pr-4 border-gray-200">
                     <p class="text-[10px] font-black text-indigo-500 uppercase">Semestre en cours</p>
-                    <p class="font-bold text-gray-700 text-sm">Semestre 1</p>
+                    <p class="font-bold text-gray-700 text-sm">
+                        @if($semestres->isNotEmpty())
+                            Semestre {{ $semestres->first()->numero }} (Dernier)
+                        @else
+                            Aucun semestre défini
+                        @endif
+                    </p>
                 </div>
-                <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-xs font-bold text-white">ML</div>
+                <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-xs font-bold text-white">
+                    @php $name = Auth::guard('enseignant')->user()->nom_Enseignant; @endphp
+                    {{ strtoupper(substr($name, 0, 1)) }}{{ ($spacePos = strpos($name, ' ')) ? strtoupper(substr($name, $spacePos + 1, 1)) : '' }}
+                </div>
             </div>
         </header>
 
         <div class="grid grid-cols-12 gap-8">
-            
+
             <div class="col-span-12 lg:col-span-4">
                 <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 sticky top-8">
                     <h3 class="font-black text-gray-800 mb-6 flex items-center gap-2">
                         <i data-lucide="plus-circle" class="text-indigo-600 w-5 h-5"></i>
                         Nouvelle Évaluation
                     </h3>
-                    
+
                     <form action="{{ route('enseignant.evaluation.store') }}" method="POST" class="space-y-5">
                         @csrf
                         <div>
@@ -89,8 +105,9 @@
                             <div class="relative">
                                 <select name="id_UE" class="w-full border-2 border-gray-50 p-4 rounded-2xl bg-gray-50 text-gray-700 font-bold outline-none focus:ring-2 ring-indigo-500 appearance-none cursor-pointer" required>
                                     <option value="">Sélectionner une matière</option>
-                                    <option value="1">Génie Logiciel (GL301)</option>
-                                    <option value="2">Programmation Avancée (PA301)</option>
+                                    @foreach($ues as $ue)
+                                        <option value="{{ $ue->id_UE }}">{{ $ue->libelle }} ({{ $ue->code }})</option>
+                                    @endforeach
                                 </select>
                                 <i data-lucide="chevron-down" class="absolute right-4 top-4 w-4 h-4 text-gray-400"></i>
                             </div>
@@ -98,15 +115,29 @@
 
                         <div>
                             <label class="block text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest">Semestre</label>
-                            <div class="relative">
-                                <select name="id_Semestre" class="w-full border-2 border-gray-50 p-4 rounded-2xl bg-gray-50 text-gray-700 font-bold outline-none focus:ring-2 ring-indigo-500 appearance-none cursor-pointer" required>
-                                    <option value="">Sélectionner un semestre</option>
-                                    <option value="1">Semestre 1</option>
-                                    <option value="2">Semestre 2</option>
-                                </select>
-                                <i data-lucide="chevron-down" class="absolute right-4 top-4 w-4 h-4 text-gray-400"></i>
+                            <div class="grid grid-cols-2 gap-2">
+                                @foreach($semestres as $semestre)
+                                    <label class="relative flex items-center justify-center p-4 border-2 rounded-2xl cursor-pointer transition-all hover:bg-gray-50 {{ $loop->first ? 'border-indigo-600 bg-indigo-50' : 'border-gray-50 bg-gray-50' }}" id="label_semestre_{{ $semestre->id_Semestre }}">
+                                        <input type="radio" name="id_Semestre" value="{{ $semestre->id_Semestre }}" class="hidden" {{ $loop->first ? 'checked' : '' }} onchange="updateSemesterSelection(this)">
+                                        <span class="font-bold text-gray-700">Semestre {{ $semestre->numero }}</span>
+                                    </label>
+                                @endforeach
                             </div>
                         </div>
+
+                        <script>
+                            function updateSemesterSelection(radio) {
+                                // Réinitialiser tous les labels
+                                document.querySelectorAll('[id^="label_semestre_"]').forEach(el => {
+                                    el.classList.remove('border-indigo-600', 'bg-indigo-50');
+                                    el.classList.add('border-gray-50', 'bg-gray-50');
+                                });
+                                // Mettre en évidence le sélectionné
+                                const label = document.getElementById('label_semestre_' + radio.value);
+                                label.classList.remove('border-gray-50', 'bg-gray-50');
+                                label.classList.add('border-indigo-600', 'bg-indigo-50');
+                            }
+                        </script>
 
                         <div>
                             <label class="block text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest">Date de l'évaluation</label>
@@ -125,13 +156,14 @@
                     <div class="p-8 border-b border-gray-50 bg-white">
                         <h3 class="font-black text-lg text-gray-800">Liste des évaluations</h3>
                     </div>
-                    
+
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest">
                                 <tr>
                                     <th class="px-8 py-5">Évaluation</th>
                                     <th class="px-8 py-5">Matière</th>
+                                    <th class="px-8 py-5 text-center">Date</th>
                                     <th class="px-8 py-5 text-center">Poids</th>
                                     <th class="px-8 py-5 text-right">Actions</th>
                                 </tr>
@@ -146,18 +178,21 @@
                                         </div>
                                     </td>
                                     <td class="px-8 py-6">
-                                        <p class="font-bold text-gray-500">{{ $evaluation->id_UE ?? 'N/A' }}</p>
-                                        <p class="text-[10px] text-indigo-400 uppercase font-black">Semestre {{ $evaluation->semestre->numero_Semestre ?? '' }}</p>
+                                        <p class="font-bold text-gray-500">{{ $evaluation->ue->libelle ?? 'N/A' }}</p>
+                                        <p class="text-[10px] text-indigo-400 uppercase font-black">Semestre {{ $evaluation->semestre->numero ?? '' }}</p>
+                                    </td>
+                                    <td class="px-8 py-6 text-center font-bold text-gray-600">
+                                        {{ \Carbon\Carbon::parse($evaluation->date_Evaluation)->format('d/m/Y') }}
                                     </td>
                                     <td class="px-8 py-6 text-center font-black text-indigo-600 bg-indigo-50/30">
                                         @if($evaluation->type_Evaluation == 'CC')
-                                            40%
+                                            30%
                                         @elseif($evaluation->type_Evaluation == 'Examen')
-                                            60%
+                                            70%
                                         @elseif($evaluation->type_Evaluation == 'TP')
                                             20%
                                         @elseif($evaluation->type_Evaluation == 'Rattrapage')
-                                            100%
+                                            70%
                                         @else
                                             N/A
                                         @endif

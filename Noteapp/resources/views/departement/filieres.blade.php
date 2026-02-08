@@ -20,11 +20,17 @@
         </div>
 
         <main class="flex-1 md:ml-64 p-4 md:p-8 w-full">
-            
+
             <header class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
                 <div class="space-y-1">
                     <h2 class="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Filières & Classes</h2>
                     <p class="text-gray-500 font-medium text-sm md:text-base">Architecture académique du département</p>
+                </div>
+                <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full shadow-sm border">
+                    <div class="w-8 h-8 bg-indigo-700 rounded-full flex items-center justify-center text-xs text-white font-bold">
+                        {{ substr(auth()->guard('departement')->user()->chef_Departement ?? 'D', 0, 1) }}
+                    </div>
+                    <span class="text-sm font-medium text-gray-700">{{ auth()->guard('departement')->user()->chef_Departement ?? 'Chef de département' }}</span>
                 </div>
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <button onclick="toggleModal('modalFiliere')" class="bg-white border border-gray-200 text-gray-700 px-5 py-3 rounded-2xl flex items-center justify-center gap-2 hover:bg-gray-50 transition-all shadow-sm font-semibold text-sm">
@@ -36,30 +42,16 @@
                 </div>
             </header>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-12">
-                <div class="bg-white p-5 md:p-6 rounded-[2rem] border border-gray-100 shadow-sm flex items-center gap-4">
-                    <div class="bg-blue-50 text-blue-600 w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-lg shadow-inner flex-shrink-0"><i class="far fa-folder"></i></div>
-                    <div><p class="text-xl md:text-2xl font-black text-gray-800">{{ $filieres->count() }}</p><p class="text-xs md:text-sm font-medium text-gray-400">Filières actives</p></div>
-                </div>
-                <div class="bg-white p-5 md:p-6 rounded-[2rem] border border-gray-100 shadow-sm flex items-center gap-4">
-                    <div class="bg-purple-50 text-purple-600 w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-lg shadow-inner flex-shrink-0"><i class="fas fa-layer-group"></i></div>
-                    <div><p class="text-xl md:text-2xl font-black text-gray-800">{{ $filieres->sum('classes_count') }}</p><p class="text-xs md:text-sm font-medium text-gray-400">Classes totales</p></div>
-                </div>
-                <div class="bg-white p-5 md:p-6 rounded-[2rem] border border-gray-100 shadow-sm flex items-center gap-4 sm:col-span-2 lg:col-span-1">
-                    <div class="bg-emerald-50 text-emerald-600 w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-lg shadow-inner flex-shrink-0"><i class="far fa-user"></i></div>
-                    <div><p class="text-xl md:text-2xl font-black text-gray-800">{{ $filieres->flatMap->classes->sum('nbre_Elv') }}</p><p class="text-xs md:text-sm font-medium text-gray-400">Effectif global</p></div>
-                </div>
-            </div>
 
             <div class="space-y-6">
                 @foreach($filieres as $filiere)
                 <div class="bg-white rounded-[1.5rem] md:rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 transition-all duration-300 overflow-hidden group">
                     <div class="p-2">
                         <div class="w-full p-3 md:p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            
+
                             <div class="flex items-center gap-4 md:gap-5 cursor-pointer flex-1" onclick="toggleClasses({{ $filiere->id_Filiere }})">
                                 <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200/50 flex-shrink-0">
-                                    <i class="fas fa-graduation-cap text-lg md:text-xl"></i>
+                                    <i class="fas fa-sitemap text-lg md:text-xl"></i>
                                 </div>
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-2">
@@ -114,7 +106,7 @@
                                 </div>
                             </div>
                             @endforeach
-                            
+
                             <button onclick="openClasseModal({{ $filiere->id_Filiere }})" class="border-2 border-dashed border-gray-200 rounded-[1.5rem] p-6 flex flex-col items-center justify-center gap-3 text-gray-400 hover:border-indigo-300 hover:text-indigo-600 hover:bg-white transition-all min-h-[120px]">
                                 <i class="fas fa-plus-circle text-xl"></i>
                                 <span class="text-xs font-bold uppercase tracking-widest">Ajouter une classe</span>
@@ -150,7 +142,7 @@
             <form id="classeForm" class="space-y-6">
                 @csrf
                 <input type="hidden" id="classeId" name="id_Classe">
-                
+
                 <div>
                     <label class="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2 pl-1">Filière parente</label>
                     <select id="filiereIdClasse" name="filiere_id" class="w-full border-gray-100 bg-gray-50 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all appearance-none" required>
@@ -174,7 +166,7 @@
 
     <script>
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        
+
         function toggleModal(id) {
             const modal = document.getElementById(id);
             if(modal) {
@@ -194,7 +186,7 @@
             if(idInput) idInput.value = '';
             if(libInput) libInput.value = '';
             if(filiereSelect) filiereSelect.value = filiereId;
-            
+
             toggleModal('modalClasse');
         }
 
@@ -202,7 +194,7 @@
             const container = document.getElementById(`classes-${filiereId}`);
             const icon = document.getElementById(`accordion-icon-${filiereId}`);
             if (!container) return;
-            
+
             container.classList.toggle('hidden');
             if (icon) {
                 icon.innerHTML = container.classList.contains('hidden')
@@ -211,7 +203,7 @@
                 icon.classList.toggle('bg-indigo-600', !container.classList.contains('hidden'));
             }
         }
-        
+
         function editFiliere(id, nom) {
             document.getElementById('modalFiliereTitle').textContent = 'Modifier Filière';
             document.getElementById('filiereId').value = id;

@@ -13,18 +13,18 @@ class DatabaseSeeder extends Seeder
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
         $this->cleanTables();
-        
+
         $this->seedDepartements();
         $this->seedAnneeAcademiques();
         $this->seedEtudiants();
-        $this->seedFilieres(); 
+        $this->seedFilieres();
         $this->seedEnseignants();
         $this->seedSemestres();
         $this->seedUEs();
         $this->seedInscriptions();
         $this->seedEvaluations();
-        $this->seedNotes(); 
-        $this->seedProcesVerbals(); 
+        $this->seedNotes();
+        $this->seedProcesVerbals();
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
         $this->command->info('Base de données UniNotes peuplée avec succès !');
@@ -41,8 +41,8 @@ class DatabaseSeeder extends Seeder
     private function seedDepartements(): void
     {
         DB::table('departements')->insert([
-            ['nom_Departement' => 'Informatique', 'chef_Departement' => 'Dr. Diallo', 'login' => 'dept_info', 'password' => Hash::make('pass123')],
-            ['nom_Departement' => 'Mathématiques', 'chef_Departement' => 'Dr. Traoré', 'login' => 'dept_math', 'password' => Hash::make('pass123')],
+            ['nom_Departement' => 'Informatique', 'chef_Departement' => 'Dr. Diallo', 'login' => 'dept_info', 'password' => Hash::make('pass123'), 'add_plain_password' => 'pass123'],
+            ['nom_Departement' => 'Mathématiques', 'chef_Departement' => 'Dr. Traoré', 'login' => 'dept_math', 'password' => Hash::make('pass123'), 'add_plain_password' => 'pass123'],
         ]);
     }
 
@@ -57,6 +57,7 @@ class DatabaseSeeder extends Seeder
                 'date_Naissance' => '2002-05-15',
                 'login' => "etu$i",
                 'password' => Hash::make('pass123'),
+                'add_plain_password' => 'pass123',
                 'created_at' => now()
             ]);
         }
@@ -66,7 +67,7 @@ class DatabaseSeeder extends Seeder
     {
         $deptId = DB::table('departements')->first()->id_Departement;
         DB::table('enseignants')->insert([
-            ['nom_Enseignant' => 'Michel Lefebvre', 'matricule' => 'ENS001', 'email' => 'm.lefebvre@uninotes.com', 'login' => 'michel', 'password' => Hash::make('michel2026'), 'id_Departement' => $deptId, 'created_at' => now()],
+            ['nom_Enseignant' => 'Michel Lefebvre', 'matricule' => 'ENS001', 'email' => 'm.lefebvre@uninotes.com', 'login' => 'michel', 'password' => Hash::make('michel2026'), 'add_plain_password' => 'michel2026', 'id_Departement' => $deptId, 'created_at' => now()],
         ]);
     }
 
@@ -165,7 +166,7 @@ class DatabaseSeeder extends Seeder
 
         // 2. Insertion des enregistrements dans 'detail_pvs' (un pour chaque étudiant)
         $etudiants = DB::table('etudiants')->get();
-        
+
         foreach ($etudiants as $key => $etudiant) {
             DB::table('detail_pvs')->insert([
                 'id_PV' => $pvId,

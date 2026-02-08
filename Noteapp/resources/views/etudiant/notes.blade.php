@@ -1,194 +1,151 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mes Notes</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
-    <style>
-        :root { --primary-color:#0d6efd; --secondary-color:#6c63ff; --dark-color:#111827; --light-color:#f8f9fa; --accent-color:#20c997; }
-        body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background-color:#ffffff;color:#333;line-height:1.6}
-        .navbar{background-color:#ffffff;box-shadow:0 2px 15px rgba(0,0,0,0.1);padding:15px 0}
-        .navbar-brand{font-weight:700;color:var(--primary-color)!important;font-size:1.5rem}
-        .sidebar{background:#0f172a;color:#ffffff;min-height:100vh;padding-top:80px}
-        .sidebar .nav-link{color:#cbd5e1;padding:12px 20px;border-radius:8px;margin:5px 10px;transition:all .3s}
-        .sidebar .nav-link:hover,.sidebar .nav-link.active{background:#1e293b;color:#ffffff}
-        .main-content{padding:30px}
-        .card{border:none;border-radius:15px;box-shadow:0 5px 15px rgba(0,0,0,0.05)}
-        .card-header{background:#fff;border-bottom:1px solid #e9ecef}
-        .kpi-card{background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));color:#fff;border-radius:15px}
-        .badge-soft{background:#e9f5ff;color:#0d6efd;border:1px solid #b6dcff}
-        .table thead th{background:#f8f9fa;border-top:none;font-weight:600}
-        .btn-primary-custom{background:var(--primary-color);color:#fff;border:none}
-        .btn-outline-custom{border:1px solid var(--primary-color);color:var(--primary-color)}
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniNotes - Mes Notes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
-  <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="#">UniNotes</a>
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle me-2"></i>Étudiant Dupont
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profil</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Paramètres</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ route('home') }}"><i class="fas fa-sign-out-alt me-2"></i>Déconnexion</a></li>
-                    </ul>
+<body class="bg-gray-50 flex">
+
+    <aside class="w-64 bg-[#1a1c2e] min-h-screen text-white flex flex-col fixed">
+        <div class="p-6 flex items-center gap-3">
+            <div class="bg-indigo-600 p-2 rounded-lg"><i data-lucide="graduation-cap"></i></div>
+            <span class="text-xl font-bold">UniNotes</span>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-2">
+            <a href="{{ route('etudiant.dashboard') }}" class="flex items-center gap-3 {{ request()->routeIs('etudiant.dashboard') ? 'bg-blue-600' : 'hover:bg-slate-800 text-gray-400' }} p-3 rounded-lg transition"><i data-lucide="home"></i> Tableau de bord</a>
+            <a href="{{ route('etudiant.notes') }}" class="flex items-center gap-3 {{ request()->routeIs('etudiant.notes') ? 'bg-blue-600' : 'hover:bg-slate-800 text-gray-400' }} p-3 rounded-lg transition"><i data-lucide="file-text"></i> Mes Notes</a>
+            <a href="{{ route('etudiant.revendications') }}" class="flex items-center gap-3 {{ request()->routeIs('etudiant.revendications') ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 text-gray-400' }} p-3 rounded-lg transition"><i data-lucide="message-square"></i> Revendications</a>
+        </nav>
+
+        <div class="p-4 m-4">
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="flex items-center gap-3 w-full text-red-400 hover:text-red-300 hover:bg-red-500/10 p-3 rounded-lg transition">
+                    <i data-lucide="log-out"></i> Déconnexion
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="flex-1 ml-64 p-8">
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-2xl font-black text-gray-800 tracking-tight">Mes Notes</h1>
+                <p class="text-gray-400 text-sm">Consultez vos résultats académiques par semestre.</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-xs font-bold text-white">
+                    {{ strtoupper(substr($etudiant->nom_Complet, 0, 1)) }}{{ ($spacePos = strpos($etudiant->nom_Complet, ' ')) ? strtoupper(substr($etudiant->nom_Complet, $spacePos + 1, 1)) : '' }}
                 </div>
+            </div>
+        </header>
+
+
+        <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden mb-10">
+            <div class="p-8 border-b border-gray-50 flex justify-between items-center bg-white">
+                <h3 class="font-black text-lg text-gray-800">PV de délibération</h3>
+                <span class="text-xs bg-green-50 text-green-600 px-4 py-2 rounded-xl font-black uppercase tracking-wider">Documents officiels</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest">
+                        <tr>
+                            <th class="px-8 py-5">Année Académique</th>
+                            <th class="px-8 py-5 text-center">Semestre</th>
+                            <th class="px-8 py-5 text-center">Date de publication</th>
+                            <th class="px-8 py-5 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        @forelse($pvs as $pv)
+                        <tr class="hover:bg-gray-50/50 transition">
+                            <td class="px-8 py-6">
+                                <p class="font-bold text-gray-800">{{ $pv->semestre->anneeAcademique->libelle_Annee ?? 'N/A' }}</p>
+                            </td>
+                            <td class="px-8 py-6 text-center">
+                                <span class="bg-indigo-50 text-indigo-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Semestre {{ $pv->semestre->numero }}</span>
+                            </td>
+                            <td class="px-8 py-6 text-center text-gray-500 font-medium">
+                                {{ \Carbon\Carbon::parse($pv->date_Generation)->format('d/m/Y') }}
+                            </td>
+                            <td class="px-8 py-6 text-right">
+                                <a href="{{ route('etudiant.pv.download', ['pv_id' => $pv->id_PV]) }}" class="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
+                                    <i data-lucide="download" class="w-4 h-4"></i> Télécharger PV
+                                </a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="px-8 py-12 text-center text-gray-500 italic">
+                                Aucun PV n'a été publié pour votre classe.
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
-    </nav>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-3 col-lg-2 sidebar d-none d-md-block">
-            <div class="pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('etudiant.dashboard') }}"><i class="fas fa-gauge-high me-2"></i>Tableau de bord</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="{{ route('etudiant.notes') }}"><i class="fas fa-book me-2"></i>Mes Notes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('etudiant.revendications') }}"><i class="fas fa-file-pen me-2"></i>Mes Revendications</a></li>
-                </ul>
-                <div class="card mt-4" style="background:#1e293b;color:#fff">
-                    <div class="card-body">
-                        <small class="text-muted" style="color:#cbd5e1!important">Étudiant</small>
-                        <h6 class="mt-2 mb-0">Jean Dupont</h6>
-                        <small class="text-muted" style="color:#cbd5e1!important">ETU2024001 - GL L3 - A</small>
-                    </div>
-                </div>
+
+        <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-8 border-b border-gray-50 flex justify-between items-center bg-white">
+                <h3 class="font-black text-lg text-gray-800">Notes disponibles</h3>
+                <span class="text-xs bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-black uppercase tracking-wider">{{ $etudiant->classe->lib_Classe ?? '' }}</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest">
+                        <tr>
+                            <th class="px-8 py-5">UE</th>
+                            <th class="px-8 py-5 text-center">Évaluation</th>
+                            <th class="px-8 py-5 text-center">Date</th>
+                            <th class="px-8 py-5 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        @forelse($evaluations as $evaluation)
+                        @php $note = $notes->get($evaluation->id_Evaluation); @endphp
+                        <tr class="hover:bg-gray-50/50 transition">
+                            <td class="px-8 py-6">
+                                <p class="font-bold text-gray-800">{{ $evaluation->ue->libelle }}</p>
+                                <p class="text-[10px] text-gray-400 font-black uppercase">{{ $evaluation->ue->code }}</p>
+                            </td>
+                            <td class="px-8 py-6 text-center">
+                                <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase">{{ $evaluation->type_Evaluation }}</span>
+                            </td>
+                            <td class="px-8 py-6 text-center text-gray-500 font-medium">
+                                {{ ($note && $note->date_Saisie) ? \Carbon\Carbon::parse($note->date_Saisie)->format('d/m/Y') : ($evaluation->date_Evaluation ? \Carbon\Carbon::parse($evaluation->date_Evaluation)->format('d/m/Y') : '-') }}
+                            </td>
+                            <td class="px-8 py-6 text-right">
+                                <a href="{{ route('etudiant.notes.download-pdf', [
+                                    'filiere_id' => $etudiant->classe->id_Filiere,
+                                    'classe_id' => $etudiant->id_Classe,
+                                    'ue_id' => $evaluation->id_UE,
+                                    'evaluation_id' => $evaluation->id_Evaluation
+                                ]) }}" class="inline-flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-gray-800 transition shadow-lg shadow-gray-200">
+                                    <i data-lucide="file-down" class="w-4 h-4"></i> Télécharger
+                                </a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="px-8 py-12 text-center">
+                                <div class="bg-gray-50 rounded-2xl p-8 border border-dashed border-gray-200">
+                                    <i data-lucide="inbox" class="w-12 h-12 text-gray-300 mx-auto mb-4"></i>
+                                    <p class="text-gray-500 font-medium">Aucune note disponible pour le moment.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
-        <div class="col-md-9 col-lg-10 main-content">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 class="h4 mb-0">Mes Notes</h1>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-custom"><i class="fas fa-download me-2"></i>Exporter</button>
-                    <button class="btn btn-outline-custom"><i class="fas fa-print me-2"></i>Imprimer</button>
-                </div>
-            </div>
-            <div class="row g-3 mb-3">
-                <div class="col-md-4">
-                    <label class="form-label">Année académique</label>
-                    <select class="form-select">
-                        <option selected>2024-2025</option>
-                        <option>2023-2024</option>
-                        <option>2022-2023</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Semestre</label>
-                    <select class="form-select">
-                        <option>Semestre 1</option>
-                        <option selected>Semestre 2</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Statut académique</label>
-                    <div class="mt-2"><span class="badge bg-success">Admis</span></div>
-                </div>
-            </div>
-            <div class="row g-3 mb-4">
-                <div class="col-lg-4">
-                    <div class="kpi-card p-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="mb-2">Moyenne Générale</h6>
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <h2 class="mb-0">13.93<span class="fs-6">/20</span></h2>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h6 class="text-muted">Statut</h6>
-                            <span class="badge bg-success">Admis</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h6 class="text-muted">Publication PV</h6>
-                            <span class="badge bg-success">Publié</span>
-                            <div><small class="text-muted">29/01/2025</small></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Relevé de Notes - Semestre 1</h5>
-                    <span class="badge badge-soft">Génie Logiciel - GL L3-A | Année 2024-2025</span>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Code</th>
-                                    <th>Matière</th>
-                                    <th class="text-center">Coef.</th>
-                                    <th class="text-center">CC</th>
-                                    <th class="text-center">TP</th>
-                                    <th class="text-center">Examen</th>
-                                    <th class="text-center">Moyenne</th>
-                                    <th class="text-center">Validation</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>PAJ301</td>
-                                    <td><strong>Programmation Avancée</strong><br><small class="text-muted">PA301</small></td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center">14.00</td>
-                                    <td class="text-center">16.00</td>
-                                    <td class="text-center">13.00</td>
-                                    <td class="text-center text-success">14.20</td>
-                                    <td class="text-center"><span class="badge bg-success">Validé</span></td>
-                                </tr>
-                                <tr>
-                                    <td>BUJ301</td>
-                                    <td><strong>Base de Données</strong><br><small class="text-muted">BD301</small></td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center">12.00</td>
-                                    <td class="text-center">15.00</td>
-                                    <td class="text-center">14.00</td>
-                                    <td class="text-center text-success">13.60</td>
-                                    <td class="text-center"><span class="badge bg-success">Validé</span></td>
-                                </tr>
-                                <tr>
-                                    <td>RIJ301</td>
-                                    <td><strong>Réseaux Informatiques</strong><br><small class="text-muted">RI301</small></td>
-                                    <td class="text-center">2</td>
-                                    <td class="text-center">13.00</td>
-                                    <td class="text-center">12.00</td>
-                                    <td class="text-center">15.00</td>
-                                    <td class="text-center text-success">15.20</td>
-                                    <td class="text-center"><span class="badge bg-success">Validé</span></td>
-                                </tr>
-                                <tr>
-                                    <td>GLJ301</td>
-                                    <td><strong>Génie Logiciel</strong><br><small class="text-muted">GL301</small></td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center">12.00</td>
-                                    <td class="text-center">12.00</td>
-                                    <td class="text-center">11.00</td>
-                                    <td class="text-center text-success">11.80</td>
-                                    <td class="text-center"><span class="badge bg-success">Validé</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </main>
+    <script>lucide.createIcons();</script>
 </body>
 </html>

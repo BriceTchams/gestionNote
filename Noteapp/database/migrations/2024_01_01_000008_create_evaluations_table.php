@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('evaluations', function (Blueprint $table) {
             $table->id('id_Evaluation');
+            $table->foreignId('id_Enseignant')->constrained('enseignants', 'id_Enseignant');
+
             $table->foreignId('id_UE')->constrained('ues', 'id_UE');
             $table->foreignId('id_Semestre')->constrained('semestres', 'id_Semestre');
             $table->enum('type_Evaluation', ['CC', 'Examen', 'TP', 'Rattrapage']);

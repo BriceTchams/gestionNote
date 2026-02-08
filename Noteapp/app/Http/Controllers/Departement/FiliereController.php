@@ -12,19 +12,28 @@ class FiliereController extends Controller
 {
     public function index()
     {
-        $filieres = Filiere::withCount('classes')->get();
+        $departementId = auth()->guard('departement')->id();
+        if (!$departementId) {
+            return redirect()->route('login')->with('error', 'Veuillez vous connecter.');
+        }
+        $filieres = Filiere::where('id_Departement', $departementId)->withCount('classes')->get();
         return view('departement.filieres', compact('filieres'));
     }
 
     public function store(Request $request)
     {
+        $departementId = auth()->guard('departement')->id();
+        if (!$departementId) {
+            return redirect()->route('login');
+        }
+
         $request->validate([
             'nom_Filiere' => 'required|string|max:255|unique:filieres,nom_Filiere',
         ]);
 
         Filiere::create([
             'nom_Filiere' => $request->nom_Filiere,
-            'id_Departement' => 1, // À adapter selon l'authentification
+            'id_Departement' => $departementId,
         ]);
 
         return redirect()->route('departement.filieres')->with('success', 'Filière créée avec succès !');
@@ -32,11 +41,13 @@ class FiliereController extends Controller
 
     public function update(Request $request, $id)
     {
+        $departementId = auth()->guard('departement')->id();
+        $filiere = Filiere::where('id_Departement', $departementId)->findOrFail($id);
+
         $request->validate([
             'nom_Filiere' => 'required|string|max:255|unique:filieres,nom_Filiere,' . $id . ',id_Filiere',
         ]);
 
-        $filiere = Filiere::findOrFail($id);
         $filiere->update([
             'nom_Filiere' => $request->nom_Filiere,
         ]);
@@ -46,7 +57,8 @@ class FiliereController extends Controller
 
     public function destroy($id)
     {
-        $filiere = Filiere::findOrFail($id);
+        $departementId = auth()->guard('departement')->id();
+        $filiere = Filiere::where('id_Departement', $departementId)->findOrFail($id);
         $filiere->delete();
 
         return redirect()->route('departement.filieres')->with('success', 'Filière supprimée avec succès !');
@@ -54,15 +66,18 @@ class FiliereController extends Controller
 
     public function storeClasse(Request $request)
     {
+        $departementId = auth()->guard('departement')->id();
+
         $request->validate([
             'filiere_id' => 'required|exists:filieres,id_Filiere',
             'lib_Classe' => 'required|string|max:255',
-            // 'nbre_Elv' => 'required|integer|min:1',
         ]);
+
+        // Vérifier que la filière appartient au département
+        Filiere::where('id_Departement', $departementId)->findOrFail($request->filiere_id);
 
         Classe::create([
             'lib_Classe' => $request->lib_Classe,
-            // 'nbre_Elv' => $request->nbre_Elv,
             'id_Filiere' => $request->filiere_id,
         ]);
 
@@ -71,15 +86,18 @@ class FiliereController extends Controller
 
     public function updateClasse(Request $request, $id)
     {
+        $departementId = auth()->guard('departement')->id();
+
+        $classe = Classe::whereHas('filiere', function($q) use ($departementId) {
+            $q->where('id_Departement', $departementId);
+        })->findOrFail($id);
+
         $request->validate([
             'lib_Classe' => 'required|string|max:255',
-            // 'nbre_Elv' => 'required|integer|min:1',
         ]);
 
-        $classe = Classe::findOrFail($id);
         $classe->update([
             'lib_Classe' => $request->lib_Classe,
-            // 'nbre_Elv' => $request->nbre_Elv,
         ]);
 
         return redirect()->route('departement.filieres')->with('success', 'Classe mise à jour avec succès !');
@@ -87,9 +105,24 @@ class FiliereController extends Controller
 
     public function destroyClasse($id)
     {
-        $classe = Classe::findOrFail($id);
+        $departementId = auth()->guard('departement')->id();
+
+        $classe = Classe::whereHas('filiere', function($q) use ($departementId) {
+            $q->where('id_Departement', $departementId);
+        })->findOrFail($id);
+
         $classe->delete();
 
         return redirect()->route('departement.filieres')->with('success', 'Classe supprimée avec succès !');
+    }
+
+    public function getClasses($id)
+    {
+        $departementId = auth()->guard('departement')->id();
+        $classes = Classe::whereHas('filiere', function($q) use ($departementId) {
+            $q->where('id_Departement', $departementId);
+        })->where('id_Filiere', $id)->get();
+
+        return response()->json(['classes' => $classes]);
     }
 }

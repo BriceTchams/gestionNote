@@ -41,7 +41,6 @@ return [
         'provider' => 'users',
     ],
 
-    // AJOUTE CECI :
     'etudiant' => [
         'driver' => 'session',
         'provider' => 'etudiants',
@@ -51,7 +50,7 @@ return [
         'driver' => 'session',
         'provider' => 'enseignants',
     ],
-    
+
     'departement' => [
         'driver' => 'session',
         'provider' => 'departements',
@@ -81,7 +80,6 @@ return [
         'model' => App\Models\User::class,
     ],
 
-    // AJOUTE CECI :
     'etudiants' => [
         'driver' => 'eloquent',
         'model' => App\Models\Etudiant::class,

@@ -23,14 +23,14 @@
             --light-color: #f8f9fa;
             --accent-color: #20c997;
         }
-        
-        body { 
-            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; 
-            background-color: #ffffff; 
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            background-color: #ffffff;
             color: #333;
             line-height: 1.6;
         }
-        
+
         /* Navigation */
         .navbar {
             background-color: #ffffff;
@@ -38,24 +38,24 @@
             padding: 15px 0;
             transition: all 0.3s ease;
         }
-        
+
         .navbar-brand {
             font-weight: 700;
             color: var(--primary-color) !important;
             font-size: 1.5rem;
         }
-        
+
         .navbar-nav .nav-link {
             color: #333 !important;
             font-weight: 500;
             margin: 0 10px;
             transition: color 0.3s ease;
         }
-        
+
         .navbar-nav .nav-link:hover {
             color: var(--primary-color) !important;
         }
-        
+
         /* Hero Section */
         .hero-section {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -63,7 +63,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .hero-section::before {
             content: '';
             position: absolute;
@@ -75,12 +75,12 @@
             clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 0% 100%);
             z-index: 1;
         }
-        
+
         .hero-content {
             position: relative;
             z-index: 2;
         }
-        
+
         .hero-title {
             font-size: 3.5rem;
             font-weight: 800;
@@ -88,26 +88,26 @@
             margin-bottom: 20px;
             line-height: 1.2;
         }
-        
+
         .hero-subtitle {
             font-size: 1.2rem;
             color: #666;
             margin-bottom: 30px;
             max-width: 600px;
         }
-        
+
         .hero-image {
             position: relative;
             z-index: 2;
             text-align: center;
         }
-        
+
         .hero-image img {
             max-width: 100%;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
-        
+
         /* Buttons */
         .btn-primary-custom {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
@@ -119,13 +119,13 @@
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
         }
-        
+
         .btn-primary-custom:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(13, 110, 253, 0.4);
             color: white;
         }
-        
+
         .btn-outline-custom {
             border: 2px solid var(--primary-color);
             color: var(--primary-color);
@@ -134,12 +134,12 @@
             font-weight: 600;
             transition: all 0.3s ease;
         }
-        
+
         .btn-outline-custom:hover {
             background-color: var(--primary-color);
             color: white;
         }
-        
+
         /* Sections */
         .section-title {
             font-size: 2.5rem;
@@ -148,7 +148,7 @@
             margin-bottom: 20px;
             text-align: center;
         }
-        
+
         .section-subtitle {
             color: #666;
             text-align: center;
@@ -156,7 +156,7 @@
             margin: 0 auto 50px;
             font-size: 1.1rem;
         }
-        
+
         /* Feature Cards */
         .feature-card {
             background: white;
@@ -167,12 +167,12 @@
             border: 1px solid #e9ecef;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
-        
+
         .feature-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
-        
+
         .feature-icon {
             width: 70px;
             height: 70px;
@@ -184,48 +184,48 @@
             font-size: 28px;
             color: white;
         }
-        
+
         .feature-icon.blue { background: linear-gradient(135deg, #0d6efd 0%, #6c63ff 100%); }
         .feature-icon.green { background: linear-gradient(135deg, #20c997 0%, #3bd6a8 100%); }
         .feature-icon.orange { background: linear-gradient(135deg, #fd7e14 0%, #ff9a3d 100%); }
         .feature-icon.purple { background: linear-gradient(135deg, #6f42c1 0%, #9d6de3 100%); }
-        
+
         /* Stats */
         .stats-section {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             padding: 80px 0;
         }
-        
+
         .stat-item {
             text-align: center;
         }
-        
+
         .stat-number {
             font-size: 3rem;
             font-weight: 700;
             margin-bottom: 10px;
         }
-        
+
         .stat-label {
             font-size: 1.1rem;
             opacity: 0.9;
         }
-        
+
         /* Footer */
         .footer {
             background-color: var(--dark-color);
             color: #9ca3af;
             padding: 60px 0 30px;
         }
-        
+
         .footer-title {
             color: white;
             font-size: 1.3rem;
             margin-bottom: 20px;
             font-weight: 600;
         }
-        
+
         .footer-links a {
             color: #9ca3af;
             text-decoration: none;
@@ -233,11 +233,11 @@
             margin-bottom: 10px;
             transition: color 0.3s ease;
         }
-        
+
         .footer-links a:hover {
             color: white;
         }
-        
+
         .copyright {
             border-top: 1px solid #333;
             padding-top: 20px;
@@ -245,13 +245,13 @@
             text-align: center;
             color: #9ca3af;
         }
-        
+
         /* Responsive */
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.5rem;
             }
-            
+
             .hero-section::before {
                 width: 100%;
                 height: 50%;
@@ -270,27 +270,27 @@
                 <div class="col-lg-6 hero-content">
                     <h1 class="hero-title">Système de Gestion de Notes Universitaire</h1>
                     <p class="hero-subtitle">
-                        Une plateforme complète et intuitive pour la gestion académique. 
-                        Consultation des notes, gestion des évaluations, publication des PV, 
+                        Une plateforme complète et intuitive pour la gestion académique.
+                        Consultation des notes, gestion des évaluations, publication des PV,
                         et administration des départements en un seul endroit.
                     </p>
-                    <div class="d-flex flex-wrap gap-3">
-                        @auth
-                            <a href="{{ route('dashboard') }}" class="btn btn-primary-custom">
-                                Accéder à mon espace <i class="fas fa-arrow-right ms-2"></i>
-                            </a>
-                        @else
-                            <a href="{{ route('login') }}" class="btn btn-primary-custom me-2">
-                                Se connecter <i class="fas fa-sign-in-alt ms-2"></i>
-                            </a>
-                            {{-- <a href="{{ route('register') }}" class="btn btn-outline-custom"> --}}
-                                Créer un compte
-                            </a>
-                        @endauth
-                    </div>
+{{--                    <div class="d-flex flex-wrap gap-3">--}}
+{{--                        @auth--}}
+{{--                            <a href="{{ route('dashboard') }}" class="btn btn-primary-custom">--}}
+{{--                                Accéder à mon espace <i class="fas fa-arrow-right ms-2"></i>--}}
+{{--                            </a>--}}
+{{--                        @else--}}
+{{--                            <a href="{{ route('login') }}" class="btn btn-primary-custom me-2">--}}
+{{--                                Se connecter <i class="fas fa-sign-in-alt ms-2"></i>--}}
+{{--                            </a>--}}
+{{--                            --}}{{-- <a href="{{ route('register') }}" class="btn btn-outline-custom"> --}}
+{{--                                Créer un compte--}}
+{{--                            </a>--}}
+{{--                        @endauth--}}
+{{--                    </div>--}}
                 </div>
                 <div class="col-lg-6 hero-image">
-                    <img src="https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?q=80&w=1200&auto=format&fit=crop"
+                    <img src="{{ asset('image/accueil_hero.png') }}"
                          alt="Campus universitaire" class="img-fluid" />
                 </div>
             </div>
@@ -336,7 +336,7 @@
             <p class="section-subtitle">
                 Découvrez les fonctionnalités complètes de notre plateforme de gestion académique
             </p>
-            
+
             <div class="row g-4">
                 <div class="col-md-4">
                     <div class="feature-card">
@@ -345,7 +345,7 @@
                         </div>
                         <h4>Consultation des Notes</h4>
                         <p>
-                            Accédez à vos résultats, relevés de notes et moyenne par semestre 
+                            Accédez à vos résultats, relevés de notes et moyenne par semestre
                             après publication des PV. Interface intuitive et données sécurisées.
                         </p>
                         <a href="{{ route('login') }}" class="text-primary fw-semibold">
@@ -353,7 +353,7 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <div class="col-md-4">
                     <div class="feature-card">
                         <div class="feature-icon green">
@@ -361,7 +361,7 @@
                         </div>
                         <h4>Gestion des Évaluations</h4>
                         <p>
-                            Enregistrement et modification des notes, gestion des requêtes 
+                            Enregistrement et modification des notes, gestion des requêtes
                             de revendication. Outils complets pour les enseignants.
                         </p>
                         <a href="{{ route('login') }}" class="text-primary fw-semibold">
@@ -369,7 +369,7 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <div class="col-md-4">
                     <div class="feature-card">
                         <div class="feature-icon orange">
@@ -377,7 +377,7 @@
                         </div>
                         <h4>Publication des PV</h4>
                         <p>
-                            Publication des PV simples et PV après rattrapage pour 
+                            Publication des PV simples et PV après rattrapage pour
                             accès immédiat par les étudiants. Notification automatique.
                         </p>
                         <a href="#annonces" class="text-primary fw-semibold">
@@ -396,7 +396,7 @@
             <p class="section-subtitle">
                 Une plateforme adaptée à chaque rôle dans l'écosystème universitaire
             </p>
-            
+
             <div class="row g-4">
                 <div class="col-md-6">
                     <div class="feature-card">
@@ -413,7 +413,7 @@
                         </ul>
                     </div>
                 </div>
-                
+
                 <div class="col-md-6">
                     <div class="feature-card">
                         <div class="d-flex align-items-center mb-3">
@@ -430,7 +430,7 @@
                         </ul>
                     </div>
                 </div>
-                
+
                 <div class="col-md-6">
                     <div class="feature-card">
                         <div class="d-flex align-items-center mb-3">
@@ -447,7 +447,7 @@
                         </ul>
                     </div>
                 </div>
-                
+
                 <div class="col-md-6">
                     <div class="feature-card">
                         <div class="d-flex align-items-center mb-3">
@@ -468,7 +468,7 @@
         </div>
     </section>
 
-   
+
 
     <!-- Call to Action Section -->
     <section class="py-5" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);">
@@ -479,10 +479,10 @@
                         Prêt à simplifier votre gestion académique ?
                     </h2>
                     <p class="text-white mb-5" style="font-size: 1.2rem; opacity: 0.9;">
-                        Rejoignez notre plateforme dès maintenant et découvrez comment nous pouvons transformer 
+                        Rejoignez notre plateforme dès maintenant et découvrez comment nous pouvons transformer
                         votre expérience académique. Simple, sécurisé et efficace.
                     </p>
-                    <a href="{{ route('login') }}" class="btn btn-light btn-lg px-5 py-3" 
+                    <a href="{{ route('login') }}" class="btn btn-light btn-lg px-5 py-3"
                        style="border-radius: 50px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);">
                         <i class="fas fa-rocket me-2"></i> Commencez maintenant
                     </a>
@@ -499,7 +499,7 @@
 
     <!-- Bootstrap 5 JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Smooth Scroll -->
     <script>
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -507,7 +507,7 @@
                 e.preventDefault();
                 const targetId = this.getAttribute('href');
                 if(targetId === '#') return;
-                
+
                 const targetElement = document.querySelector(targetId);
                 if(targetElement) {
                     window.scrollTo({
@@ -517,14 +517,14 @@
                 }
             });
         });
-        
+
         // Contact Form Submission
         document.getElementById('contactForm').addEventListener('submit', function(e) {
             e.preventDefault();
             alert('Merci pour votre message ! Nous vous répondrons dans les plus brefs délais.');
             this.reset();
         });
-        
+
         // Navbar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');

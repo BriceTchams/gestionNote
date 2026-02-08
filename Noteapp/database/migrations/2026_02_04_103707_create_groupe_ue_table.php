@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id("idGroupe");
             $table->string("code");
             $table->string("intitule");
-            $table->foreignId('id_departement')->constrained('departements', 'id_Departement');
+            $table->foreignId('id_Filiere')->constrained('filieres', 'id_Filiere');
             $table->timestamps();
         });
     }

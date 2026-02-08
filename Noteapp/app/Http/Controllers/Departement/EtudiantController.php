@@ -13,126 +13,77 @@ use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Symfony\Component\Mime\Email;
 
 class EtudiantController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $filieres = Filiere::all();
-        $classes = [];
-        $etudiants = collect();
-        
-        if ($request->filled('filiere_id')) {
-            $classes = Classe::where('id_Filiere', $request->filiere_id)->get();
-        }
-        
-        if ($request->filled('classe_id')) {
-            $etudiants = Etudiant::where('id_Classe', $request->classe_id)->get();
-        }
-        
-        return view('departement.etudiants', compact('filieres', 'classes', 'etudiants'));
-    }
-    
-    public function getEtudiantsByClasse(Request $request)
-    {
-        $request->validate([
-            'classe_id' => 'required|exists:classes,id_Classe'
-        ]);
-        
-        $etudiants = Etudiant::where('id_Classe', $request->classe_id)->get();
-        
-        return response()->json(['etudiants' => $etudiants]);
-    }
-    
-    public function search(Request $request)
-    {
-        $query = Etudiant::query();
-        
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('nom', 'LIKE', '%' . $search . '%')
-                  ->orWhere('matricule', 'LIKE', '%' . $search . '%')
-                  ->orWhere('email', 'LIKE', '%' . $search . '%')
-                  ->orWhere('login', 'LIKE', '%' . $search . '%');
-            });
-        }
-        
-        if ($request->filled('classe_id')) {
-            $query->where('id_Classe', $request->classe_id);
-        }
-        
-        $etudiants = $query->get();
-        
-        return response()->json(['etudiants' => $etudiants]);
-    }
-    
-    public function updateEtudiant(Request $request, $id)
-    {
-        $request->validate([
-            'nom' => 'required|string|max:255',
-            'telephone' => 'required|string|max:11|unique:etudiants,telephone,' . $id . ',id_Etudiant',
-            'email' => 'required|email|unique:etudiants,email,' . $id . ',id_Etudiant',
-            'idClasse' => 'required|exists:classes,id_Classe'
-        ]);
-        
-        $etudiant = Etudiant::findOrFail($id);
-        $etudiant->update([
-            'nom' => $request->nom,
-            'telephone' => $request->telephone,
-            'email' => $request->email,
-            'id_Classe' => $request->idClasse,
-            'date_naissance' => $request->dateNais
-        ]);
-        
-        return response()->json(['success' => true, 'message' => 'Étudiant mis à jour avec succès']);
+        $departementId = auth()->guard('departement')->id();
+        $filieres = Filiere::where('id_Departement', $departementId)->get();
+        $classes = Classe::whereHas('filiere', function($q) use ($departementId) {
+            $q->where('id_Departement', $departementId);
+        })->get();
+
+        $etudiants = [];
+        return view('departement.etudiants', compact('etudiants', 'filieres', 'classes'));
     }
 
     public function store(Request $request)
     {
+        $departementId = auth()->guard('departement')->id();
 
         $request->validate([
             'nom' => 'required|string|max:255',
             'telephone' => 'required|string|max:11|unique:etudiants,telephone',
-            'email'=>'required'
+            'email'=>'required',
+            'idClasse' => 'required|exists:classes,id_Classe'
         ]);
-        // Génération d'un mot de passe en clair puis hachage pour stockage
+
+        // Vérifier que la classe appartient au département
+        Classe::whereHas('filiere', function($q) use ($departementId) {
+            $q->where('id_Departement', $departementId);
+        })->findOrFail($request->idClasse);
+
+        // Génération d'un mot de passe aléatoire
         $plainPassword = Str::random(8);
         $password = Hash::make($plainPassword);
 
-        // Génération d'un login lisible (nom + matricule si fourni) et garantissant l'unicité
-        $base = strtolower(preg_replace('/\s+/', '', explode(' ', $request->nom)[0] ?? 'etudiant'));
-        if (!empty($request->matriule)) {
-            $base .= preg_replace('/\s+/', '', strtolower($request->matriule));
-        }
-        if (empty($base)) {
-            $base = 'etudiant';
-        }
+        // Génération automatique du matricule
+        do {
+            $matricule = 'ETU' . date('Y') . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        } while (Etudiant::where('matricule_Et', $matricule)->exists());
 
-        $login = $base;
-        $i = 1;
+        // Génération d'un login de 8 caractères maximum
+        $base = strtolower(preg_replace('/\s+/', '', explode(' ', $request->nom)[0] ?? 'etud'));
+        // Prendre les 4 premières lettres du nom et ajouter un nombre aléatoire de 4 chiffres
+        $base = substr($base, 0, 4);
+
+        $login = $base . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+        // Garantir l'unicité
         while (Etudiant::where('login', $login)->exists()) {
-            $login = $base . $i;
-            $i++;
+            $login = $base . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
         }
 
         Etudiant::create([
-            'matricule' => $request->matriule ,
-            'nom' => $request->nom,
+            'matricule_Et' => $matricule ,
+            'nom_Complet' => $request->nom,
             'telephone' => $request->telephone,
             'email' => $request->email ,
             'password' => $password ,
+            'add_plain_password' => $plainPassword,
             'login' => $login ,
-            'id_Classe' => $request->idClasse ,
-            'date_naissance' =>$request->dateNais ,
-
+            'id_Classe' => $request->idClasse,
+            'date_Naissance' => $request->dateNais,
         ]);
 
         // Retourner les informations de connexion générées (mot de passe en clair dans le flash)
-        return redirect()->route('departement.')->with('success', 'Étudiant créé avec succès !')->with([
+        return redirect()->route('departement.etudiants')->with('success', 'Étudiant créé avec succès !')->with([
             'generated_login' => $login,
             'generated_password' => $plainPassword,
+            'generated_matricule' => $matricule,
         ]);
     }
 
@@ -197,5 +148,147 @@ class EtudiantController extends Controller
         $classe->delete();
 
         return redirect()->route('departement.filieres')->with('success', 'Classe supprimée avec succès !');
+    }
+
+    public function getByClasse(Request $request)
+    {
+        $departementId = auth()->guard('departement')->id();
+        $classeId = $request->query('classe_id');
+
+        $etudiants = Etudiant::whereHas('classe.filiere', function($q) use ($departementId) {
+                $q->where('id_Departement', $departementId);
+            })
+            ->with(['classe.filiere'])
+            ->where('id_Classe', $classeId)
+            ->orderBy('nom_Complet', 'asc')
+            ->get();
+
+        return response()->json(['etudiants' => $etudiants]);
+    }
+
+    public function search(Request $request)
+    {
+        $departementId = auth()->guard('departement')->id();
+        $searchTerm = $request->query('search');
+        $classeId = $request->query('classe_id');
+
+        $query = Etudiant::whereHas('classe.filiere', function($q) use ($departementId) {
+            $q->where('id_Departement', $departementId);
+        })->with(['classe.filiere']);
+
+        if ($classeId) {
+            $query->where('id_Classe', $classeId);
+        }
+
+        if ($searchTerm) {
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('nom_Complet', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('matricule_Et', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('login', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('email', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+
+        $etudiants = $query->orderBy('nom_Complet', 'asc')->get();
+
+        return response()->json(['etudiants' => $etudiants]);
+    }
+
+    public function show($id)
+    {
+        $departementId = auth()->guard('departement')->id();
+        $etudiant = Etudiant::whereHas('classe.filiere', function($q) use ($departementId) {
+            $q->where('id_Departement', $departementId);
+        })->with(['classe.filiere'])->findOrFail($id);
+
+        return response()->json($etudiant);
+    }
+
+    public function updateEtudiant(Request $request, $id)
+    {
+        $departementId = auth()->guard('departement')->id();
+
+        $request->validate([
+            'nom' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'telephone' => 'required|string|max:11',
+            'idClasse' => 'required|exists:classes,id_Classe'
+        ]);
+
+        $etudiant = Etudiant::whereHas('classe.filiere', function($q) use ($departementId) {
+            $q->where('id_Departement', $departementId);
+        })->findOrFail($id);
+
+        // Vérifier que la nouvelle classe appartient au département
+        Classe::whereHas('filiere', function($q) use ($departementId) {
+            $q->where('id_Departement', $departementId);
+        })->findOrFail($request->idClasse);
+
+        $etudiant->update([
+            'nom_Complet' => $request->nom,
+            'email' => $request->email,
+            'telephone' => $request->telephone,
+            'date_Naissance' => $request->dateNais,
+            'id_Classe' => $request->idClasse,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Étudiant modifié avec succès !'
+        ]);
+    }
+
+    public function destroyEtudiant($id)
+    {
+        $departementId = auth()->guard('departement')->id();
+        $etudiant = Etudiant::whereHas('classe.filiere', function($q) use ($departementId) {
+            $q->where('id_Departement', $departementId);
+        })->findOrFail($id);
+
+        $etudiant->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Étudiant supprimé avec succès !'
+        ]);
+    }
+
+    public function downloadPdf(Request $request)
+    {
+        $departementId = auth()->guard('departement')->id();
+        $classeId = $request->query('classe_id');
+        $searchTerm = $request->query('search');
+
+        $query = Etudiant::whereHas('classe.filiere', function($q) use ($departementId) {
+            $q->where('id_Departement', $departementId);
+        })->with(['classe.filiere']);
+
+        if ($classeId) {
+            $query->where('id_Classe', $classeId);
+        }
+
+        if ($searchTerm) {
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('nom_Complet', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('matricule_Et', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('login', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('email', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+
+        $etudiants = $query->orderBy('nom_Complet', 'asc')->get();
+
+        $classe = null;
+        if ($classeId) {
+            $classe = Classe::with('filiere')->find($classeId);
+        }
+
+        $pdf = Pdf::loadView('departement.etudiants_pdf', [
+            'etudiants' => $etudiants,
+            'classe' => $classe,
+            'date' => now()->format('d/m/Y')
+        ]);
+
+        return $pdf->download('liste_etudiants_' . now()->format('Y-m-d') . '.pdf');
     }
 }

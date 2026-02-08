@@ -7,10 +7,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Ue extends Model
 {
-    //
-    protected $fillable = [ 'code' , 'libelle' , 'credits' ,  'id_filiere ' , 'idGroupe' ];
+    protected $primaryKey = 'id_UE';
+    protected $fillable = [ 'code' , 'libelle' , 'credits' , 'idGroupe' , 'id_Enseignant' ];
 
     public function groupe_ue():BelongsTo {
-        $this->belongsTo(GroupeUe::class , 'idGroupe');
+        return $this->belongsTo(GroupeUe::class , 'idGroupe');
+    }
+
+    public function enseignant():BelongsTo {
+        return $this->belongsTo(Enseignant::class , 'id_Enseignant');
     }
 }

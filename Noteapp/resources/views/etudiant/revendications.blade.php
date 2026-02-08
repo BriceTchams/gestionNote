@@ -1,130 +1,166 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mes Revendications</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
-    <style>
-        :root { --primary-color:#0d6efd; --secondary-color:#6c63ff; --dark-color:#111827; --light-color:#f8f9fa; --accent-color:#20c997; }
-        body{font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background-color:#ffffff;color:#333;line-height:1.6}
-        .navbar{background-color:#ffffff;box-shadow:0 2px 15px rgba(0,0,0,0.1);padding:15px 0}
-        .navbar-brand{font-weight:700;color:var(--primary-color)!important;font-size:1.5rem}
-        .sidebar{background:#0f172a;color:#ffffff;min-height:100vh;padding-top:80px}
-        .sidebar .nav-link{color:#cbd5e1;padding:12px 20px;border-radius:8px;margin:5px 10px;transition:all .3s}
-        .sidebar .nav-link:hover,.sidebar .nav-link.active{background:#1e293b;color:#ffffff}
-        .main-content{padding:30px}
-        .card{border:none;border-radius:15px;box-shadow:0 5px 15px rgba(0,0,0,0.05)}
-        .card-header{background:#fff;border-bottom:1px solid #e9ecef}
-        .kpi-box{background:#fff;border:1px solid #e9ecef;border-radius:15px;padding:20px}
-        .kpi-title{color:#6b7280;font-weight:600}
-        .kpi-value{font-size:1.8rem;font-weight:700}
-        .badge-soft{background:#e9f5ff;color:#0d6efd;border:1px solid #b6dcff}
-        .btn-primary-custom{background:var(--primary-color);color:#fff;border:none}
-        .btn-outline-custom{border:1px solid var(--primary-color);color:var(--primary-color)}
-        .list-group-item{border:1px solid #e9ecef;border-radius:12px;margin-bottom:10px}
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniNotes - Mes Revendications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
-v  <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand" href="#">UniNotes</a>
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle me-2"></i>Étudiant Dupont
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profil</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Paramètres</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ route('home') }}"><i class="fas fa-sign-out-alt me-2"></i>Déconnexion</a></li>
-                    </ul>
+<body class="bg-gray-50 flex">
+
+    <aside class="w-64 bg-[#1a1c2e] min-h-screen text-white flex flex-col fixed">
+        <div class="p-6 flex items-center gap-3">
+            <div class="bg-indigo-600 p-2 rounded-lg"><i data-lucide="graduation-cap"></i></div>
+            <span class="text-xl font-bold">UniNotes</span>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-2">
+            <a href="{{ route('etudiant.dashboard') }}" class="flex items-center gap-3 {{ request()->routeIs('etudiant.dashboard') ? 'bg-blue-600' : 'hover:bg-slate-800 text-gray-400' }} p-3 rounded-lg transition"><i data-lucide="home"></i> Tableau de bord</a>
+            <a href="{{ route('etudiant.notes') }}" class="flex items-center gap-3 {{ request()->routeIs('etudiant.notes') ? 'bg-blue-600' : 'hover:bg-slate-800 text-gray-400' }} p-3 rounded-lg transition"><i data-lucide="file-text"></i> Mes Notes</a>
+            <a href="{{ route('etudiant.revendications') }}" class="flex items-center gap-3 {{ request()->routeIs('etudiant.revendications') ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 text-gray-400' }} p-3 rounded-lg transition"><i data-lucide="message-square"></i> Revendications</a>
+        </nav>
+
+        <div class="p-4 m-4">
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="flex items-center gap-3 w-full text-red-400 hover:text-red-300 hover:bg-red-500/10 p-3 rounded-lg transition">
+                    <i data-lucide="log-out"></i> Déconnexion
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="flex-1 ml-64 p-8">
+        @if(session('success'))
+        <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 flex justify-between items-center rounded-r-xl shadow-sm">
+            <div class="flex items-center gap-3">
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                <span class="font-bold">{{ session('success') }}</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-green-900/50 hover:text-green-900"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+        @endif
+
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-2xl font-black text-gray-800 tracking-tight">Mes Revendications</h1>
+                <p class="text-gray-400 text-sm">Gérez vos réclamations concernant vos notes.</p>
+            </div>
+            <button onclick="document.getElementById('modalRevendication').classList.remove('hidden')" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
+                <i data-lucide="plus-circle" class="w-5 h-5"></i> Nouvelle revendication
+            </button>
+        </header>
+
+        <div class="grid grid-cols-3 gap-8 mb-10">
+            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-5">
+                <div class="bg-orange-50 text-orange-500 p-4 rounded-2xl"><i data-lucide="clock" class="w-6 h-6"></i></div>
+                <div>
+                    <p class="text-3xl font-black text-gray-800">{{ $stats['en_attente'] }}</p>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">En attente</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-5">
+                <div class="bg-green-50 text-green-500 p-4 rounded-2xl"><i data-lucide="check-circle" class="w-6 h-6"></i></div>
+                <div>
+                    <p class="text-3xl font-black text-gray-800">{{ $stats['approuvees'] }}</p>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Approuvées</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-5">
+                <div class="bg-red-50 text-red-500 p-4 rounded-2xl"><i data-lucide="x-circle" class="w-6 h-6"></i></div>
+                <div>
+                    <p class="text-3xl font-black text-gray-800">{{ $stats['rejetees'] }}</p>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Rejetées</p>
                 </div>
             </div>
         </div>
-    </nav>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-3 col-lg-2 sidebar d-none d-md-block">
-            <div class="pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item"><a class="nav-link" href="/etudiant/dashboard"><i class="fas fa-gauge-high me-2"></i>Tableau de bord</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/etudiant/notes"><i class="fas fa-book me-2"></i>Mes Notes</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/etudiant/revendications"><i class="fas fa-file-pen me-2"></i>Mes Revendications</a></li>
-                </ul>
-                <div class="card mt-4" style="background:#1e293b;color:#fff">
-                    <div class="card-body">
-                        <small class="text-muted" style="color:#cbd5e1!important">Étudiant</small>
-                        <h6 class="mt-2 mb-0">Jean Dupont</h6>
-                        <small class="text-muted" style="color:#cbd5e1!important">ETU2024001 - GL L3 - A</small>
+
+        <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-10">
+            <h3 class="font-black text-xl text-gray-800 mb-8">Historique des revendications</h3>
+
+            <div class="space-y-6">
+                @forelse($revendications as $rev)
+                <div class="bg-gray-50 p-8 rounded-3xl border border-gray-100">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="font-black text-lg text-gray-800">{{ $rev->evaluation->ue->libelle }} ({{ $rev->evaluation->type_Evaluation }})</h4>
+                            @php
+                                $note = \App\Models\Note::where('id_Evaluation', $rev->id_Evaluation)
+                                    ->where('id_Etudiant', $rev->id_Etudiant)
+                                    ->first();
+                            @endphp
+                            <p class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Note contestée: {{ $note ? number_format($note->valeur, 2) . '/20' : 'N/A' }}</p>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase">Enseignant: {{ $rev->evaluation->ue->enseignant->nom_Enseignant ?? 'N/A' }}</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase
+                            {{ $rev->statut == 'en attente' ? 'bg-orange-100 text-orange-600' : ($rev->statut == 'traitée' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600') }}">
+                            {{ $rev->statut }}
+                        </span>
+                    </div>
+                    <p class="text-gray-500 text-sm leading-relaxed italic">"{{ $rev->message }}"</p>
+
+                    @if($rev->reponse_enseignant)
+                    <div class="mt-4 p-4 bg-white rounded-2xl border border-gray-100">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Réponse de l'enseignant :</p>
+                        <p class="text-sm text-gray-700">{{ $rev->reponse_enseignant }}</p>
+                    </div>
+                    @endif
+
+                    <div class="mt-6 pt-6 border-t border-gray-200 flex justify-between items-center">
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Soumise le {{ $rev->created_at->format('d/m/Y') }}</span>
                     </div>
                 </div>
+                @empty
+                <div class="text-center py-10">
+                    <i data-lucide="inbox" class="w-12 h-12 text-gray-200 mx-auto mb-4"></i>
+                    <p class="text-gray-400">Vous n'avez aucune revendication pour le moment.</p>
+                </div>
+                @endforelse
             </div>
         </div>
-        <div class="col-md-9 col-lg-10 main-content">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 class="h4 mb-0">Mes Revendications</h1>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-primary-custom"><i class="fas fa-plus me-2"></i>Nouvelle revendication</button>
-                </div>
+    </main>
+
+    <!-- Modal Nouvelle Revendication -->
+    <div id="modalRevendication" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden">
+            <div class="p-8 border-b border-gray-50 flex justify-between items-center">
+                <h3 class="font-black text-xl text-gray-800">Nouvelle revendication</h3>
+                <button onclick="document.getElementById('modalRevendication').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
             </div>
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="kpi-box">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="kpi-title">En attente</span>
-                            <i class="fas fa-hourglass-half text-warning"></i>
-                        </div>
-                        <div class="kpi-value">1</div>
+            <form action="{{ route('etudiant.revendications.store') }}" method="POST" class="p-8 space-y-6">
+                @csrf
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest">Évaluation à contester</label>
+                    <div class="relative">
+                        <select name="id_Evaluation" class="w-full border-2 border-gray-50 p-4 rounded-2xl bg-gray-50 text-gray-700 font-bold outline-none focus:ring-2 ring-indigo-500 appearance-none cursor-pointer" required>
+                            <option value="">Sélectionner une évaluation</option>
+                            @foreach($evaluations as $evaluation)
+                                @php
+                                    $note = \App\Models\Note::where('id_Evaluation', $evaluation->id_Evaluation)
+                                        ->where('id_Etudiant', $etudiant->id_Etudiant)
+                                        ->first();
+                                @endphp
+                                <option value="{{ $evaluation->id_Evaluation }}">
+                                    {{ $evaluation->ue->libelle }} - {{ $evaluation->type_Evaluation }} ({{ $note ? number_format($note->valeur, 2) . '/20' : 'N/A' }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <i data-lucide="chevron-down" class="absolute right-4 top-4 w-4 h-4 text-gray-400 pointer-events-none"></i>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="kpi-box">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="kpi-title">Approuvées</span>
-                            <i class="fas fa-check-circle text-success"></i>
-                        </div>
-                        <div class="kpi-value">0</div>
-                    </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest">Message / Justification</label>
+                    <textarea name="message" rows="4" class="w-full border-2 border-gray-50 p-4 rounded-2xl bg-gray-50 text-gray-700 font-bold outline-none focus:ring-2 ring-indigo-500 focus:bg-white transition" placeholder="Expliquez pourquoi vous contestez cette note..." required></textarea>
                 </div>
-                <div class="col-md-4">
-                    <div class="kpi-box">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="kpi-title">Rejetées</span>
-                            <i class="fas fa-times-circle text-danger"></i>
-                        </div>
-                        <div class="kpi-value">0</div>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Historique des revendications</h5>
-                    <span class="badge badge-soft">Dernières mises à jour</span>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-start">
-                            <div class="me-3">
-                                <h6 class="mb-1"><i class="fas fa-code me-2"></i>Génie Logiciel</h6>
-                                <small class="text-muted">Note actuelle: 11.8/20</small>
-                                <p class="mt-2 mb-0">Je pense qu\'il y a une erreur dans le calcul de ma note d\'examen. J\'ai vérifié mes réponses et je devrais avoir au moins 13.</p>
-                            </div>
-                            <div class="text-end">
-                                <span class="badge bg-warning">En attente</span>
-                                <div class="mt-2"><small class="text-muted">Soumise le 2025-01-15</small></div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white p-4 rounded-2xl font-black text-sm shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition">
+                    Envoyer la revendication
+                </button>
+            </form>
         </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>

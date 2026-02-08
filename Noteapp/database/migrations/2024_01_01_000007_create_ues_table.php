@@ -13,8 +13,8 @@ return new class extends Migration
             $table->string('libelle', 255);
             $table->string('code', 25)->unique();
             $table->integer('credits')->default(0);
-            $table->foreignId('id_Filiere')->constrained('filieres', 'id_Filiere');
             $table->foreignId('idGroupe')->constrained('groupe_ue', 'idGroupe');
+            $table->foreignId('id_Enseignant')->constrained('enseignants', 'id_Enseignant');
 
             $table->timestamps();
         });

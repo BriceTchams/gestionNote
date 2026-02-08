@@ -12,10 +12,11 @@ return new class extends Migration
             $table->foreignId('id_PV')->constrained('proces_verbals', 'id_PV');
             $table->foreignId('id_Etudiant')->constrained('etudiants', 'id_Etudiant');
             $table->float('moyenne_Etudiant');
+            $table->integer('credits_valides')->default(0);
             $table->string('mention', 50)->nullable();
-            $table->enum('decision', ['Admis', 'Rattrapage']);
+            $table->enum('decision', ['Admis', 'Rattrapage', 'Ajourné']);
             $table->timestamps();
-            
+
             $table->primary(['id_PV', 'id_Etudiant']);
         });
     }

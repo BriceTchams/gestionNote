@@ -16,9 +16,13 @@
                 <a href="{{ route('departement.etudiants') }}" class="flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl transition">
                     <i class="fas fa-user-graduate w-5"></i> Étudiants
                 </a>
-                <a href="{{ route('departement.pv') }}" class="flex items-center gap-3 p-3 bg-blue-600 text-white rounded-xl">
+                    <a href="{{ route('departement.ues') }}" class="flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl transition">
+                    <i class="fas fa-layer-group w-5"></i> Ue et groupe
+                </a>
+                <a href="{{ route('departement.pv') }}" class="flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl transition">
                     <i class="fas fa-file-signature w-5"></i> Publication PV
                 </a>
+
              </nav>
              <form method="POST" action="{{ route('logout') }}" class="mt-4">
                  @csrf
