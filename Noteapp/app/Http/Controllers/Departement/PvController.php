@@ -396,7 +396,7 @@ class PvController extends Controller
         $moyenneAdmisToutValide = $admisAyantToutValide->count() > 0 ? $admisAyantToutValide->avg('moyenne') : 0;
 
         usort($resultats, function($a, $b) {
-            return $b['moyenne'] <=> $a['moyenne'];
+            return strcasecmp($a['etudiant']->nom_Complet, $b['etudiant']->nom_Complet);
         });
 
         $isRattrapage = Evaluation::where('id_Semestre', $semestre->id_Semestre)
